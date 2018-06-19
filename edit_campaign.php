@@ -83,6 +83,12 @@
 								?>	
 								</select>
 							</div>
+                                <!--
+                            <div class="form-group">
+                                <label>Sender ID*</label>
+                                <input type="text" name="sender_id" maxlength="11" parsley-trigger="change" required placeholder="Enter sender_id..." class="form-control" value="<?php echo $row['sender_id']?>">
+                            </div>
+                            -->
 							<div class="form-group">
 								<label><input name="attach_mobile_device" <?php if($row['attach_mobile_device']=='1')echo 'checked="checked"';else echo '';?> value="1" type="checkbox" /> Attach mobile device</label>
 							</div>

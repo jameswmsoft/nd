@@ -24,6 +24,7 @@
 										<th>Title</th>
 										<th>Keyword</th>
 										<th>Phone Number</th>
+                                        <!--<th>Sender ID</th>-->
 										<th>Follow Up</th>
 										<th>Subscribers / Unsubscribers</th>
 										<th>Media</th>
@@ -66,6 +67,7 @@
 													<td style="text-align:left"><?php echo $row['title'];?></td>
 													<td align="center"><?php echo $row['keyword'];?></td>
 													<td><?php echo $row['phone_number'];?></td>
+                                                    <!--<td align="center"><?php echo $row['sender_id'];?></td>-->
 													<td align="center">
 														<?php
 															$f = mysqli_query($link,"select id from follow_up_msgs where group_id='".$row['id']."'");

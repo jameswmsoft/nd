@@ -62,11 +62,17 @@
 									if(mysqli_num_rows($rec)){
 										while($numbers = mysqli_fetch_assoc($rec)){
 											echo '<option '.$selected.' value="'.$numbers['phone_number'].'">'.$numbers['phone_number'].'</option>';
-										}	
+										}
 									}
-								?>	
+								?>
 								</select>
 							</div>
+                                <!--
+                            <div class="form-group">
+                                <label>Sender ID*</label>
+                                <input type="text" name="sender_id" maxlength="11" parsley-trigger="change" required placeholder="Enter sender_Id..." class="form-control">
+                            </div>
+                                -->
 							<div class="form-group">
 								<label><input name="attach_mobile_device" value="1" type="checkbox" /> Attach mobile device</label>
 							</div>
@@ -489,7 +495,7 @@
 			$('.'+eleMent+'').hide('slow');
 		}
 	}
-    
+
 	function slideToggleMainSection(obj,section,chkBox){
 		var html = $(obj).html();
 		var check = html.indexOf("fa-plus");

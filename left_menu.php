@@ -75,6 +75,9 @@
 			<li class="<?php if($pageName=='settings.php') echo 'active';?>"> <a href="settings.php"> <i class="pe-7s-tools"></i>
 				<p>Settings</p>
 				</a> </li>
+            <li class="<?php if(($pageName=='view_template.php') || ($pageName=='add_template.php') || ($pageName=='edit_template.php'))echo 'active';?>"> <a href="view_template.php"> <i class="pe-7s-note2"></i>
+                    <p>Template</p>
+                </a> </li>
 				
 			<!-- <li class="<?php if($pageName=='videos.php') echo 'active';?>"> <a href="videos.php"> <i class="pe-7s-monitor"></i>
 				<p>Tutorials</p>

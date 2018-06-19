@@ -822,6 +822,7 @@
 				if($isChat==false){
 					// Making History
 					$media = @implode(',',$media);
+					$smsSid = addslashes($smsSid);
 					$sql = "insert into sms_history
 								(
 									to_number,
