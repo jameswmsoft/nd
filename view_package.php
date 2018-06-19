@@ -25,6 +25,8 @@
 										<th>Gateway</th>
 										<th>SMS Credits</th>
 										<th>Allowed Number</th>
+                                        <th>Locations</th>
+                                        <th>Reminders</th>
 										<th>Country</th>
 										<th>Price</th>
 										<!--<th>Created Date</th>-->
@@ -45,6 +47,8 @@
 													<td><?php echo ucfirst($row['sms_gateway'])?></td>
 													<td align="center"><?php echo $row['sms_credits']?></td>
 													<td align="center"><?php echo $row['phone_number_limit']?></td>
+                                                    <td align="center"><?php echo $row['locations']?></td>
+                                                    <td align="center"><?php echo $row['reminders']?></td>
 													<td align="center"><?php echo $row['country']?></td>
 													<td><?php echo '$/'.$row['price'];?></td>
 													<!--<td><?php echo $row['created_date']?></td>-->

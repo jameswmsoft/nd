@@ -113,6 +113,8 @@
 												end_date,
 												sms_credits,
 												phone_number_limit,
+												locations,
+												reminders,
 												pkg_country,
 												iso_country
 											)
@@ -124,6 +126,8 @@
 												'".$endDate."',
 												'".$pkgInfo['sms_credits']."',
 												'".$pkgInfo['phone_number_limit']."',
+												'".$pkgInfo['locations']."',
+												'".$pkgInfo['reminders']."',
 												'".$pkgInfo['country']."',
 												'".$pkgInfo['iso_country']."'
 											)";
@@ -262,6 +266,8 @@
 							title,
 							sms_credits,
 							phone_number_limit,
+							locations,
+							reminders,
 							currency,
 							price,
 							user_id,
@@ -275,6 +281,8 @@
 							'".DBin($_REQUEST['title'])."',
 							'".$_REQUEST['sms_credits']."',
 							'".$_REQUEST['phone_number_limit']."',
+							'".$_REQUEST['locations']."',
+							'".$_REQUEST['reminders']."',
 							'".$_REQUEST['currency']."',
 							'".$_REQUEST['price']."',
 							'".$adminSettings['user_id']."',

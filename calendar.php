@@ -93,9 +93,11 @@ class Calendar
         echo '<td width="30" class="cal_weekday">Sunday</td>';
         echo '</tr><tr style="height: 120px">';
 
-        $sql = "SELECT *, DAY(apt_time) aDay,MONTH(apt_time) aMonth, YEAR(apt_time) aYear FROM `appointments` WHERE YEAR(apt_time) = {$year} AND MONTH(apt_time) = {$month} 
-                OR YEAR(apt_time) = {$prev_year} AND MONTH(apt_time) = {$prev_month} OR YEAR(apt_time) = {$next_year} AND MONTH(apt_time) = {$next_month}";
+        $sql = "SELECT *, DAY(apt_time) aDay, MONTH(apt_time) aMonth, YEAR(apt_time) aYear FROM `appointments` WHERE ((YEAR(apt_time) = {$year} AND MONTH(apt_time) = {$month})
+                OR (YEAR(apt_time) = {$prev_year} AND MONTH(apt_time) = {$prev_month}) OR (YEAR(apt_time) = {$next_year} AND MONTH(apt_time) = {$next_month})) AND user_id='".$_SESSION['user_id']."'";
+
         $res = mysqli_query($link, $sql);
+
         $rowsAry = array();
 
         if(mysqli_num_rows($res)) {
@@ -116,23 +118,22 @@ class Calendar
             $month_days = $prev_lastday;
         }
 
-        for ($i = 1; $i <= $month_days; $i++){
-
+        for ($i =1; $i <= $month_days; $i++){
             $ary = array(); $pre_ary = array(); $next_ary = array();
-            for ($j = 1; $j <= count($rowsAry); $j++){
-                if ($rowsAry[$j]['aDay'] == $i AND $rowsAry[$j]['aMonth'] == $month AND $rowsAry[$j]['aYear'] == $year){
+            for ($j = 0; $j < count($rowsAry); $j++){
+                if (($rowsAry[$j]['aDay'] == $i) AND ($rowsAry[$j]['aMonth'] == $month) AND ($rowsAry[$j]['aYear'] == $year)){
                     $ary[] = $rowsAry[$j];
                 }
             }
 
-            for ($pj = 1; $pj <= count($rowsAry); $pj++){
-                if ($rowsAry[$pj]['aDay'] == $i AND $rowsAry[$pj]['aMonth'] == $prev_month AND $rowsAry[$pj]['aYear'] == $prev_year){
+            for ($pj = 0; $pj <= count($rowsAry); $pj++){
+                if (($rowsAry[$pj]['aDay'] == $i) AND ($rowsAry[$pj]['aMonth'] == $prev_month) AND ($rowsAry[$pj]['aYear'] == $prev_year)){
                     $pre_ary[] = $rowsAry[$pj];
                 }
             }
 
-            for ($nj = 1; $nj <= count($rowsAry); $nj++){
-                if ($rowsAry[$nj]['aDay'] == $i AND $rowsAry[$nj]['aMonth'] == $next_month  AND $rowsAry[$nj]['aYear'] == $next_year){
+            for ($nj = 0; $nj <= count($rowsAry); $nj++){
+                if (($rowsAry[$nj]['aDay'] == $i) AND ($rowsAry[$nj]['aMonth'] == $next_month ) AND ($rowsAry[$nj]['aYear'] == $next_year)){
                     $next_ary[] = $rowsAry[$nj];
                 }
             }
@@ -156,7 +157,7 @@ class Calendar
 
             foreach($aptsLastAry as $aptLast){
 
-                echo '<div class="cal_appoint_title"><div class="item_appoint"><a href="edit_apt.php?id='.$aptLast['id'].'">'.$aptLast['title'].'</a></div><div style="width: 10%;float: right"><i class="fa fa-trash-o remove_icon" onclick="deleteApt('.$aptLast['id'].')"></i></div></div>';
+                echo '<div class="cal_appoint_title"><a href="edit_apt.php?id='.$aptLast['id'].'"><div class="item_appoint">'.$aptLast['title'].'</div></a><div style="width: 10%;float: right"><i class="fa fa-trash-o remove_icon" onclick="deleteApt('.$aptLast['id'].')"></i></div></div>';
 
             }
 
@@ -178,7 +179,7 @@ class Calendar
 
             foreach($aptsAray as $apt){
 
-                echo '<div class="cal_appoint_title"><div class="item_appoint"><a href="edit_apt.php?id='.$apt['id'].'">'.$apt['title'].'</a></div><div style="width: 10%;float: right"><i class="fa fa-trash-o remove_icon" onclick="deleteApt('.$apt['id'].')"></i></div></div>';
+                echo '<div class="cal_appoint_title"><a href="edit_apt.php?id='.$apt['id'].'"><div class="item_appoint">'.$apt['title'].'</div></a><div style="width: 10%;float: right"><i class="fa fa-trash-o remove_icon" onclick="deleteApt('.$apt['id'].')"></i></div></div>';
 
             }
 
@@ -203,7 +204,7 @@ class Calendar
 
             foreach($aptsNextAry as $aptNext){
 
-                echo '<div class="cal_appoint_title"><div class="item_appoint"><a href="edit_apt.php?id='.$aptNext['id'].'">'.$aptNext['title'].'</a></div><div style="width: 10%;float: right"><i class="fa fa-trash-o remove_icon" onclick="deleteApt('.$aptNext['id'].')"></i></div></div>';
+                echo '<div class="cal_appoint_title"><a href="edit_apt.php?id='.$aptNext['id'].'"><div class="item_appoint">'.$aptNext['title'].'</div></a><div style="width: 10%;float: right"><i class="fa fa-trash-o remove_icon" onclick="deleteApt('.$aptNext['id'].')"></i></div></div>';
 
             }
 

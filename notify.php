@@ -35,8 +35,8 @@
 					$today	= date('Y-m-d H').':00:00';
 					$endDate= date('Y-m-d H:i',strtotime('+1 month'.$today));
 					$insPkg = "insert into user_package_assignment
-								(user_id,pkg_id,start_date,end_date,sms_credits,phone_number_limit,iso_country,pkg_country)values
-								('".$userID."','".$row['pkg_id']."','".$today."','".$endDate."','".$pkgInfo['sms_credits']."','".$pkgInfo['phone_number_limit']."','".$pkgInfo['iso_country']."','".$pkgInfo['country']."')";
+								(user_id,pkg_id,start_date,end_date,sms_credits,phone_number_limit,locations,reminders,iso_country,pkg_country)values
+								('".$userID."','".$row['pkg_id']."','".$today."','".$endDate."','".$pkgInfo['sms_credits']."','".$pkgInfo['phone_number_limit']."','".$pkgInfo['locations']."','".$pkgInfo['reminders']."','".$pkgInfo['iso_country']."','".$pkgInfo['country']."')";
 					mysqli_query($link,$insPkg);
 					
 					// User notification

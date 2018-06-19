@@ -122,6 +122,8 @@ if(mysqli_num_rows($exe)){
 				<div class="price-bg">
 					<ul>
 						<li class="whyt"><a href="#">Available SMS Credits <b><?php echo $row['sms_credits']?></b></a></li>
+                        <li class="whyt"><a href="#">Available Locations <b><?php echo $row['locations']?></b></a></li>
+                        <li class="whyt"><a href="#">Available Reminders <b><?php echo $row['reminders']?></b></a></li>
 						<li><a href="#">Allowed Phone Numbers <b><?php echo $row['phone_number_limit']?></b></a></li>
 						<li class="whyt"><a href="#">Released Date <b><?php echo date('F/d/Y',strtotime($row['created_date']))?></b></a></li>
 						<!--<li><a href="#">Secure Payment via Paypal</b></a></li>-->

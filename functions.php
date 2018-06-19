@@ -542,6 +542,18 @@
 			return mysqli_fetch_assoc($res);
 		}
 	}
+    function getCampaingsLocations($userID){
+        global $link;
+        $sql = "select id from campaigns where user_id='".$userID."'";
+        $res = mysqli_query($link,$sql);
+        return mysqli_num_rows($res);
+    }
+    function getAppointmentReminders($userID){
+        global $link;
+        $sql = "select id from appointments where user_id='".$userID."'";
+        $res = mysqli_query($link,$sql);
+        return mysqli_num_rows($res);
+    }
 	function getPackageInfo($id){
 		global $link;
 		$sql = "select * from package_plans where id='".$id."'";

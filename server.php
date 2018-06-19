@@ -1940,13 +1940,19 @@
 
 		case "save_appointment":{
 
-			$aptDate = date('Y-m-d',strtotime($_REQUEST['apt_date']));
+		    $totalReminders = getAppointmentReminders($_SESSION['user_id']);
 
-			$aptTime = $_REQUEST['apt_time'].':00';
+            $limitReminders = getAssingnedPackageInfo($_SESSION['user_id'])['reminders'];
 
-			$dateTime= $aptDate.' '.$aptTime;
+            if($totalReminders < $limitReminders) {
 
-			$sql = "insert into appointments
+                $aptDate = date('Y-m-d', strtotime($_REQUEST['apt_date']));
+
+                $aptTime = $_REQUEST['apt_time'] . ':00';
+
+                $dateTime = $aptDate . ' ' . $aptTime;
+
+                $sql = "insert into appointments
 
 						(
 
@@ -1968,57 +1974,57 @@
 
 						(
 
-							'".DBin($_REQUEST['apt_title'])."',
+							'" . DBin($_REQUEST['apt_title']) . "',
 
-							'".$dateTime."',
+							'" . $dateTime . "',
 
-							'".DBin($_REQUEST['apt_message'])."',
+							'" . DBin($_REQUEST['apt_message']) . "',
 
-							'".$_REQUEST['group_id']."',
+							'" . $_REQUEST['group_id'] . "',
 
-							'".$_REQUEST['phone_number_id']."',
+							'" . $_REQUEST['phone_number_id'] . "',
 
-							'".$_SESSION['user_id']."'
+							'" . $_SESSION['user_id'] . "'
 
 						)";
 
-			$res = mysqli_query($link,$sql);
+                $res = mysqli_query($link, $sql);
 
-			$aptID = mysqli_insert_id($link);
+                $aptID = mysqli_insert_id($link);
 
-			if($res){
+                if ($res) {
 
-				// adding alerts here.
+                    // adding alerts here.
 
-				for($i=0; $i<count($_REQUEST['before_time']); $i++){
+                    for ($i = 0; $i < count($_REQUEST['before_time']); $i++) {
 
-					if((trim($_REQUEST['before_time'][$i])!='')&&(trim($_REQUEST['before_message'][$i])!='')){
+                        if ((trim($_REQUEST['before_time'][$i]) != '') && (trim($_REQUEST['before_message'][$i]) != '')) {
 
-						// uploading media
+                            // uploading media
 
-						if($_FILES['before_media']['name'][$i]!=''){
+                            if ($_FILES['before_media']['name'][$i] != '') {
 
-							$ext = getExtension($_FILES['before_media']['name'][$i]);
+                                $ext = getExtension($_FILES['before_media']['name'][$i]);
 
-							if(in_array($ext,validImageExtensions())){
+                                if (in_array($ext, validImageExtensions())) {
 
-								$fileName = uniqid().'.'.$ext;
+                                    $fileName = uniqid() . '.' . $ext;
 
-								$tmpName = $_FILES['before_media']['tmp_name'][$i];
+                                    $tmpName = $_FILES['before_media']['tmp_name'][$i];
 
-								move_uploaded_file($tmpName,'uploads/'.$fileName);
+                                    move_uploaded_file($tmpName, 'uploads/' . $fileName);
 
-							}
+                                }
 
-						}else{
+                            } else {
 
-							$fileName = '';	
+                                $fileName = '';
 
-						}
+                            }
 
-						// end
+                            // end
 
-						$alerts = "insert into appointment_alerts
+                            $alerts = "insert into appointment_alerts
 
 										(
 
@@ -2040,61 +2046,60 @@
 
 										(
 
-											'".$aptID."',
+											'" . $aptID . "',
 
-                                            '".$_REQUEST['before_date'][$i]."',
+                                            '" . $_REQUEST['before_date'][$i] . "',
 
-                                            '".$_REQUEST['before_time'][$i]."',
+                                            '" . $_REQUEST['before_time'][$i] . "',
 
-											'".DBin($_REQUEST['before_message'][$i])."',
+											'" . DBin($_REQUEST['before_message'][$i]) . "',
 
-											'".$fileName."',
+											'" . $fileName . "',
 
-											'".$_SESSION['user_id']."'
+											'" . $_SESSION['user_id'] . "'
 
 										)";
 
-						mysqli_query($link,$alerts) or die(mysqli_error($link));
+                            mysqli_query($link, $alerts) or die(mysqli_error($link));
 
-					}					
+                        }
 
-				}
+                    }
 
-				// end
+                    // end
 
-				
 
-				// adding followups here.
+                    // adding followups here.
 
-				for($i=0; $i<count($_REQUEST['delay_time']); $i++){
+                    for ($i = 0; $i < count($_REQUEST['delay_time']); $i++) {
 
-					if((trim($_REQUEST['delay_time'][$i])!='')&&(trim($_REQUEST['delay_message'][$i])!='')){
+                        if ((trim($_REQUEST['delay_time'][$i]) != '') && (trim($_REQUEST['delay_message'][$i]) != '')) {
 
-						// uploading media
+                            // uploading media
 
-						if($_FILES['delay_media']['name'][$i]!=''){
+                            if ($_FILES['delay_media']['name'][$i] != '') {
 
-							$ext = getExtension($_FILES['delay_media']['name'][$i]);
+                                $ext = getExtension($_FILES['delay_media']['name'][$i]);
 
-							if(in_array($ext,validImageExtensions())){
+                                if (in_array($ext, validImageExtensions())) {
 
-								$fileName = uniqid().'.'.$ext;
+                                    $fileName = uniqid() . '.' . $ext;
 
-								$tmpName = $_FILES['delay_media']['tmp_name'][$i];
+                                    $tmpName = $_FILES['delay_media']['tmp_name'][$i];
 
-								move_uploaded_file($tmpName,'uploads/'.$fileName);
+                                    move_uploaded_file($tmpName, 'uploads/' . $fileName);
 
-							}
+                                }
 
-						}else{
+                            } else {
 
-							$fileName = '';	
+                                $fileName = '';
 
-						}
+                            }
 
-						// end
+                            // end
 
-						$followup = "insert into appointment_followup_msgs
+                            $followup = "insert into appointment_followup_msgs
 
 										(
 
@@ -2116,43 +2121,39 @@
 
 										(
 
-											'".$aptID."',
+											'" . $aptID . "',
 
-											'".$_REQUEST['delay_date'][$i]."',
+											'" . $_REQUEST['delay_date'][$i] . "',
 
-                                            '".$_REQUEST['delay_time'][$i]."',
+                                            '" . $_REQUEST['delay_time'][$i] . "',
 
-											'".DBin($_REQUEST['delay_message'][$i])."',
+											'" . DBin($_REQUEST['delay_message'][$i]) . "',
 
-											'".$fileName."',
+											'" . $fileName . "',
 
-											'".$_SESSION['user_id']."'
+											'" . $_SESSION['user_id'] . "'
 
 										)";
 
-						mysqli_query($link,$followup) or die(mysqli_error($link));
+                            mysqli_query($link, $followup) or die(mysqli_error($link));
 
-					}
+                        }
 
-				}
+                    }
 
-				// end
-
-				
-
-				// Sending appointment message.
+                    // end
 
 
+                    // Sending appointment message.
 
 
+                    $aptMessage = $_REQUEST['apt_message'];
 
-				$aptMessage = $_REQUEST['apt_message'];
+                    if ($_REQUEST['phone_number_id'] = 'all') { // Sending to whole group
 
-				if($_REQUEST['phone_number_id']='all'){ // Sending to whole group
+                        $groupID = $_REQUEST['group_id'];
 
-					$groupID = $_REQUEST['group_id'];
-
-					$sql = "select 
+                        $sql = "select 
 
 								s.id, 
 
@@ -2172,79 +2173,77 @@
 
 							where
 
-								sga.group_id='".$groupID."' and
+								sga.group_id='" . $groupID . "' and
 
 								sga.subscriber_id=s.id and
 
 								s.status='1' and
 
-								c.id='".$groupID."'";
+								c.id='" . $groupID . "'";
 
-					$res = mysqli_query($link,$sql);
+                        $res = mysqli_query($link, $sql);
 
-					if(mysqli_num_rows($res)){
+                        if (mysqli_num_rows($res)) {
 
-						$userPkgStatus = checkUserPackageStatus($_SESSION['user_id']);
+                            $userPkgStatus = checkUserPackageStatus($_SESSION['user_id']);
 
-						if($userPkgStatus['go']==false){
+                            if ($userPkgStatus['go'] == false) {
 
-							$remainingCredits = 0;
+                                $remainingCredits = 0;
 
-							die($userPkgStatus['message']);
+                                die($userPkgStatus['message']);
 
-						}else{
+                            } else {
 
-							$remainingCredits = $userPkgStatus['remaining_credits'];
+                                $remainingCredits = $userPkgStatus['remaining_credits'];
 
-						}
+                            }
 
-                        
 
-                        $apt_date = date("Y-m-d h:i a",strtotime($dateTime));
+                            $apt_date = date("Y-m-d h:i a", strtotime($dateTime));
 
-						$aptMessage = str_replace('%apt_date%',$apt_date,$aptMessage);
+                            $aptMessage = str_replace('%apt_date%', $apt_date, $aptMessage);
 
-						while($row = mysqli_fetch_assoc($res)){
+                            while ($row = mysqli_fetch_assoc($res)) {
 
-							$subsID = $row['id'];
+                                $subsID = $row['id'];
 
-							$toNumber = $row['phone_number'];
+                                $toNumber = $row['phone_number'];
 
-							$fromNumber = $row['groupNumber']; //$row['groupSender_id'];
+                                $fromNumber = $row['groupNumber']; //$row['groupSender_id'];
 
-							sendMessage($fromNumber,$toNumber,$aptMessage,array(),$_SESSION['user_id'],"",false);
+                                sendMessage($fromNumber, $toNumber, $aptMessage, array(), $_SESSION['user_id'], "", false);
 
-							// Scheduling alerts
+                                // Scheduling alerts
 
-							$selAlts = "select * from appointment_alerts where apt_id='".$aptID."'";
+                                $selAlts = "select * from appointment_alerts where apt_id='" . $aptID . "'";
 
-							$resAlts = mysqli_query($link,$selAlts);
+                                $resAlts = mysqli_query($link, $selAlts);
 
-							if(mysqli_num_rows($resAlts)){
+                                if (mysqli_num_rows($resAlts)) {
 
-								while($rowAlts = mysqli_fetch_assoc($resAlts)){
+                                    while ($rowAlts = mysqli_fetch_assoc($resAlts)) {
 
-									//$altTime = date('Y-m-d H:i:s',strtotime($rowAlts['message_time'],strtotime($dateTime)));
+                                        //$altTime = date('Y-m-d H:i:s',strtotime($rowAlts['message_time'],strtotime($dateTime)));
 
-                                    $altTime = $rowAlts['message_date']." ".$rowAlts['message_time'].":00";
+                                        $altTime = $rowAlts['message_date'] . " " . $rowAlts['message_time'] . ":00";
 
-									$alertMessage = DBout($rowAlts['apt_message']);
+                                        $alertMessage = DBout($rowAlts['apt_message']);
 
-									if(trim($rowAlts['media'])!=''){
+                                        if (trim($rowAlts['media']) != '') {
 
-										$alertMedia = getServerUrl().'/uploads/'.$rowAlts['media'];
+                                            $alertMedia = getServerUrl() . '/uploads/' . $rowAlts['media'];
 
-									}else{
+                                        } else {
 
-										$alertMedia = '';
+                                            $alertMedia = '';
 
-									}
+                                        }
 
-									$userID = $rowAlts['user_id'];
+                                        $userID = $rowAlts['user_id'];
 
-									
 
-									$shcAlts = "insert into queued_msgs
+                                        $shcAlts = "insert into queued_msgs
 
 													(
 
@@ -2270,63 +2269,62 @@
 
 													(
 
-														'".$toNumber."',
+														'" . $toNumber . "',
 
-														'".$fromNumber."',
+														'" . $fromNumber . "',
 
-														'".$alertMessage."',
+														'" . $alertMessage . "',
 
-														'".$alertMedia."',
+														'" . $alertMedia . "',
 
 														'2',
 
-														'".$altTime."',
+														'" . $altTime . "',
 
-														'".$userID."',
+														'" . $userID . "',
 
-														'".$groupID."'
+														'" . $groupID . "'
 
 													)";
 
-									mysqli_query($link,$shcAlts);
+                                        mysqli_query($link, $shcAlts);
 
-								}
+                                    }
 
-							}
+                                }
 
-							// end
+                                // end
 
-							
 
-							// Scheduling followup
+                                // Scheduling followup
 
-							$selFollowup = "select * from appointment_followup_msgs where apt_id='".$aptID."'";
+                                $selFollowup = "select * from appointment_followup_msgs where apt_id='" . $aptID . "'";
 
-							$resFollowup = mysqli_query($link,$selFollowup);
+                                $resFollowup = mysqli_query($link, $selFollowup);
 
-							if(mysqli_num_rows($resFollowup)){
+                                if (mysqli_num_rows($resFollowup)) {
 
-								while($rowFollowup = mysqli_fetch_assoc($resFollowup)){
+                                    while ($rowFollowup = mysqli_fetch_assoc($resFollowup)) {
 
-									//$altTime = date('Y-m-d H:i:s',strtotime($rowFollowup['message_time'],strtotime($dateTime)));
+                                        //$altTime = date('Y-m-d H:i:s',strtotime($rowFollowup['message_time'],strtotime($dateTime)));
 
-                                    $altTime = $rowFollowup['message_date']." ".$rowFollowup['message_time'].":00";
+                                        $altTime = $rowFollowup['message_date'] . " " . $rowFollowup['message_time'] . ":00";
 
-									$alertMessage = DBout($rowFollowup['apt_message']);
+                                        $alertMessage = DBout($rowFollowup['apt_message']);
 
-									if(trim($rowFollowup['media'])!=''){
+                                        if (trim($rowFollowup['media']) != '') {
 
-										$alertMedia = getServerUrl().'/uploads/'.$rowFollowup['media'];
+                                            $alertMedia = getServerUrl() . '/uploads/' . $rowFollowup['media'];
 
-									}else{
+                                        } else {
 
-										$alertMedia = '';
+                                            $alertMedia = '';
 
-									}
+                                        }
 
-									$userID = $rowFollowup['user_id'];
+                                        $userID = $rowFollowup['user_id'];
 
-									$shcFollowup = "insert into queued_msgs
+                                        $shcFollowup = "insert into queued_msgs
 
 													(
 
@@ -2352,43 +2350,43 @@
 
 													(
 
-														'".$toNumber."',
+														'" . $toNumber . "',
 
-														'".$fromNumber."',
+														'" . $fromNumber . "',
 
-														'".$alertMessage."',
+														'" . $alertMessage . "',
 
-														'".$alertMedia."',
+														'" . $alertMedia . "',
 
 														'2',
 
-														'".$altTime."',
+														'" . $altTime . "',
 
-														'".$userID."',
+														'" . $userID . "',
 
-														'".$groupID."'
+														'" . $groupID . "'
 
 													)";
 
-									mysqli_query($link,$shcFollowup);
+                                        mysqli_query($link, $shcFollowup);
 
-								}
+                                    }
 
-							}
+                                }
 
-							// end
+                                // end
 
-						}	
+                            }
 
-					}
+                        }
 
-				}else{ // sending to single number
+                    } else { // sending to single number
 
-					$phoneID = $_REQUEST['phone_number_id'];
+                        $phoneID = $_REQUEST['phone_number_id'];
 
-					$groupID = $_REQUEST['group_id'];
+                        $groupID = $_REQUEST['group_id'];
 
-					$sql = "select
+                        $sql = "select
 
 								s.phone_number,
 
@@ -2404,73 +2402,71 @@
 
 							where 
 
-								s.id='".$phoneID."' and
+								s.id='" . $phoneID . "' and
 
-								c.id='".$groupID."'";
+								c.id='" . $groupID . "'";
 
-					$res = mysqli_query($link,$sql);
+                        $res = mysqli_query($link, $sql);
 
-					if(mysqli_num_rows($res)){
+                        if (mysqli_num_rows($res)) {
 
-						$row = mysqli_fetch_assoc($res);
+                            $row = mysqli_fetch_assoc($res);
 
-						$userPkgStatus = checkUserPackageStatus($_SESSION['user_id']);
+                            $userPkgStatus = checkUserPackageStatus($_SESSION['user_id']);
 
-						if($userPkgStatus['go']==false){
+                            if ($userPkgStatus['go'] == false) {
 
-							$remainingCredits = 0;
+                                $remainingCredits = 0;
 
-							die($userPkgStatus['message']);
+                                die($userPkgStatus['message']);
 
-						}else{
+                            } else {
 
-							$remainingCredits = $userPkgStatus['remaining_credits'];
+                                $remainingCredits = $userPkgStatus['remaining_credits'];
 
-						}
+                            }
 
-                                    
 
-                        $apt_date = date("Y-m-d h:i a",strtotime($dateTime));
+                            $apt_date = date("Y-m-d h:i a", strtotime($dateTime));
 
-						$aptMessage = str_replace('%apt_date%',$apt_date,$aptMessage);
+                            $aptMessage = str_replace('%apt_date%', $apt_date, $aptMessage);
 
-						$toNumber = $row['phone_number'];
+                            $toNumber = $row['phone_number'];
 
-						$fromNumber = $row['groupNumber']; //$row['groupSender_id'];
+                            $fromNumber = $row['groupNumber']; //$row['groupSender_id'];
 
-						sendMessage($fromNumber,$toNumber,$aptMessage,array(),$_SESSION['user_id'],"",false);					
+                            sendMessage($fromNumber, $toNumber, $aptMessage, array(), $_SESSION['user_id'], "", false);
 
-						// Scheduling alerts
+                            // Scheduling alerts
 
-						$selAlts = "select * from appointment_alerts where apt_id='".$aptID."'";
+                            $selAlts = "select * from appointment_alerts where apt_id='" . $aptID . "'";
 
-						$resAlts = mysqli_query($link,$selAlts);
+                            $resAlts = mysqli_query($link, $selAlts);
 
-						if(mysqli_num_rows($resAlts)){
+                            if (mysqli_num_rows($resAlts)) {
 
-							while($rowAlts = mysqli_fetch_assoc($resAlts)){
+                                while ($rowAlts = mysqli_fetch_assoc($resAlts)) {
 
-								//$altTime = date('Y-m-d H:i:s',strtotime($rowAlts['message_time'],strtotime($dateTime)));
+                                    //$altTime = date('Y-m-d H:i:s',strtotime($rowAlts['message_time'],strtotime($dateTime)));
 
-                                $altTime = $rowAlts['message_date']." ".$rowAlts['message_time'].":00";
+                                    $altTime = $rowAlts['message_date'] . " " . $rowAlts['message_time'] . ":00";
 
-								$alertMessage = DBout($rowAlts['apt_message']);
+                                    $alertMessage = DBout($rowAlts['apt_message']);
 
-								if(trim($rowAlts['media'])!=''){
+                                    if (trim($rowAlts['media']) != '') {
 
-									$alertMedia = getServerUrl().'/uploads/'.$rowAlts['media'];
+                                        $alertMedia = getServerUrl() . '/uploads/' . $rowAlts['media'];
 
-								}else{
+                                    } else {
 
-									$alertMedia = '';
+                                        $alertMedia = '';
 
-								}
+                                    }
 
-								$userID = $rowAlts['user_id'];
+                                    $userID = $rowAlts['user_id'];
 
-								
 
-								$shcAlts = "insert into queued_msgs
+                                    $shcAlts = "insert into queued_msgs
 
 												(
 
@@ -2496,59 +2492,57 @@
 
 												(
 
-													'".$toNumber."',
+													'" . $toNumber . "',
 
-													'".$fromNumber."',
+													'" . $fromNumber . "',
 
-													'".$alertMessage."',
+													'" . $alertMessage . "',
 
-													'".$alertMedia."',
+													'" . $alertMedia . "',
 
 													'2',
 
-													'".$altTime."',
+													'" . $altTime . "',
 
-													'".$userID."',
+													'" . $userID . "',
 
-													'".$groupID."'
+													'" . $groupID . "'
 
 												)";
 
-								mysqli_query($link,$shcAlts);
+                                    mysqli_query($link, $shcAlts);
 
-							}
+                                }
 
-						}
+                            }
 
-						// end
+                            // end
 
-						
+                            // Scheduling followup
 
-						// Scheduling followup
+                            $selFollowup = "select * from appointment_followup_msgs where apt_id='" . $aptID . "'";
 
-						$selFollowup = "select * from appointment_followup_msgs where apt_id='".$aptID."'";
+                            $resFollowup = mysqli_query($link, $selFollowup);
 
-						$resFollowup = mysqli_query($link,$selFollowup);
+                            if (mysqli_num_rows($resFollowup)) {
 
-						if(mysqli_num_rows($resFollowup)){
+                                while ($rowFollowup = mysqli_fetch_assoc($resFollowup)) {
 
-							while($rowFollowup = mysqli_fetch_assoc($resFollowup)){
+                                    //$altTime = date('Y-m-d H:i:s',strtotime($rowFollowup['message_time'],strtotime($dateTime)));\
 
-								//$altTime = date('Y-m-d H:i:s',strtotime($rowFollowup['message_time'],strtotime($dateTime)));\
+                                    $altTime = $rowFollowup['message_date'] . " " . $rowFollowup['message_time'] . ":00";
 
-                                $altTime = $rowFollowup['message_date']." ".$rowFollowup['message_time'].":00";
+                                    $alertMessage = DBout($rowFollowup['apt_message']);
 
-								$alertMessage = DBout($rowFollowup['apt_message']);
+                                    if (trim($rowFollowup['media']) != '') {
 
-								if(trim($rowFollowup['media'])!=''){
+                                        $alertMedia = getServerUrl() . '/uploads/' . $rowFollowup['media'];
 
-									$alertMedia = getServerUrl().'/uploads/'.$rowFollowup['media'];
+                                    }
 
-								}
+                                    $userID = $rowFollowup['user_id'];
 
-								$userID = $rowFollowup['user_id'];
-
-								$shcFollowup = "insert into queued_msgs
+                                    $shcFollowup = "insert into queued_msgs
 
 												(
 
@@ -2574,45 +2568,48 @@
 
 												(
 
-													'".$toNumber."',
+													'" . $toNumber . "',
 
-													'".$fromNumber."',
+													'" . $fromNumber . "',
 
-													'".$alertMessage."',
+													'" . $alertMessage . "',
 
-													'".$alertMedia."',
+													'" . $alertMedia . "',
 
 													'2',
 
-													'".$altTime."',
+													'" . $altTime . "',
 
-													'".$userID."',
+													'" . $userID . "',
 
-													'".$groupID."'
+													'" . $groupID . "'
 
 												)";
 
-								mysqli_query($link,$shcFollowup);
+                                    mysqli_query($link, $shcFollowup);
 
-							}
+                                }
 
-						}
+                            }
 
-						// end	
+                            // end
 
-					}
+                        }
 
-				}
+                    }
 
-				// end
+                    // end
 
-				$_SESSION['message'] = '<div class="alert alert-success"><strong>Success! appointment save successfully</strong>.</div>';
+                    $_SESSION['message'] = '<div class="alert alert-success"><strong>Success! appointment save successfully</strong>.</div>';
 
-			}else{
+                } else {
 
-				$_SESSION['message'] = '<div class="alert alert-danger"><strong>Failed! to save appointment</strong>.</div>';
+                    $_SESSION['message'] = '<div class="alert alert-danger"><strong>Failed! to save appointment</strong>.</div>';
 
-			}
+                }
+            }else{
+                $_SESSION['message'] = '<div class="alert alert-success">Your created reminders limit is exceeded, Currently created <b>'.$totalReminders.'</b> reminders(s). </div>';
+            }
 
 			header("location: view_apts.php");
 
@@ -6716,9 +6713,9 @@
 
 							$insPkg = "insert into user_package_assignment
 
-(user_id,pkg_id,start_date,end_date,sms_credits,phone_number_limit,pkg_country,iso_country)values
+(user_id,pkg_id,start_date,end_date,sms_credits,phone_number_limit,locations,reminders,pkg_country,iso_country)values
 
-							('".$userID."','".$_REQUEST['pkg_id']."','".$startDate."','".$endDate."','".$pkgInfo['sms_credits']."','".$pkgInfo['phone_number_limit']."','".$pkgInfo['country']."','".$pkgInfo['iso_country']."')";
+							('".$userID."','".$_REQUEST['pkg_id']."','".$startDate."','".$endDate."','".$pkgInfo['sms_credits']."','".$pkgInfo['phone_number_limit']."','".$pkgInfo['locations']."','".$pkgInfo['reminders']."','".$pkgInfo['country']."','".$pkgInfo['iso_country']."')";
 
 							mysqli_query($link,$insPkg);
 
@@ -6963,6 +6960,10 @@
 													sms_credits,
 
 													phone_number_limit,
+													
+													locations,
+													
+													reminders,
 
 													pkg_country,
 
@@ -6985,6 +6986,10 @@
 													'".$pkgInfo['sms_credits']."',
 
 													'".$pkgInfo['phone_number_limit']."',
+													
+													'".$pkgInfo['locations']."',
+													
+													'".$pkgInfo['reminders']."',
 
 													'".$pkgInfo['country']."',
 
@@ -7235,6 +7240,10 @@
 											sms_credits,
 
 											phone_number_limit,
+											
+											locations,
+											
+											reminders,
 
 											pkg_country,
 
@@ -7259,6 +7268,10 @@
 											'".$pkgInfo['sms_credits']."',
 
 											'".$pkgInfo['phone_number_limit']."',
+											
+											'".$pkgInfo['locations']."',
+											
+											'".$pkgInfo['reminders']."',
 
 											'".$pkgInfo['country']."',
 
@@ -7527,6 +7540,10 @@
 			$sql = "update package_plans set
 
 						title='".DBin($_REQUEST['title'])."',
+						
+						locations='".DBin($_REQUEST['locations'])."',
+						
+						reminders='".DBin($_REQUEST['reminders'])."',
 
 						sms_credits='".$_REQUEST['sms_credits']."',
 
@@ -7589,6 +7606,10 @@
 							(
 
 								title,
+								
+								locations,
+								
+								reminders,
 
 								sms_credits,
 
@@ -7619,6 +7640,10 @@
 							(
 
 								'".DBin($_REQUEST['title'])."',
+								
+								'".DBin($_REQUEST['locations'])."',
+								
+								'".DBin($_REQUEST['reminders'])."',
 
 								'".$_REQUEST['sms_credits']."',
 
@@ -11475,359 +11500,351 @@
 
 				}
 
-				$title = DBin($_REQUEST['title']);
+				$totalLocations=getCampaingsLocations($_SESSION['user_id']);
 
-                $sender_id = ""; //DBin($_REQUEST['sender_id']);
+                $LimitLocations = getAssingnedPackageInfo($_SESSION['user_id'])['locations'];
 
-				$phoneNumber = $_REQUEST['phone_number'];
+                if($totalLocations < $LimitLocations) {
 
-				$welcomeSms  = DBin($_REQUEST['welcome_sms']);
+                    $title = DBin($_REQUEST['title']);
 
-				$alreadyMemberSms = DBin($_REQUEST['already_member_sms']);
+                    $sender_id = ""; //DBin($_REQUEST['sender_id']);
 
-				$doubleOptin = DBin($_REQUEST['double_optin']);
+                    $phoneNumber = $_REQUEST['phone_number'];
 
-                
+                    $welcomeSms = DBin($_REQUEST['welcome_sms']);
 
-				if(isset($_REQUEST['get_subs_email'])){
+                    $alreadyMemberSms = DBin($_REQUEST['already_member_sms']);
 
-					$get_email = $_REQUEST['get_subs_email'];
+                    $doubleOptin = DBin($_REQUEST['double_optin']);
 
-				}else{
 
-					$get_email = '0';
+                    if (isset($_REQUEST['get_subs_email'])) {
 
-				}
+                        $get_email = $_REQUEST['get_subs_email'];
 
-				if($_REQUEST['attach_mobile_device']!='1')
+                    } else {
 
-					$_REQUEST['attach_mobile_device'] = '0';
-
-					
-
-				if($_REQUEST['double_optin_check']!='1')
-
-					$_REQUEST['double_optin_check'] = '0';
-
-				if($_REQUEST['get_subs_name_check']!='1')
-
-					$_REQUEST['get_subs_name_check'] = '0';
-
-				if($_REQUEST['campaign_expiry_check']!='1')
-
-					$_REQUEST['campaign_expiry_check'] = '0';
-
-				if($_REQUEST['followup_msg_check']!='1')
-
-					$_REQUEST['followup_msg_check'] = '0';
-
-
-
-                $reply_email = DBin($_REQUEST['reply_email']);
-
-                $email_updated = DBin($_REQUEST['email_updated']);
-
-				$sql = "insert into campaigns
-
-							(
-
-								title,
-
-								keyword,
-
-								phone_number,
-								
-								sender_id,
-
-								type,
-
-								welcome_sms,
-
-								already_member_msg,
-
-								media,
-
-								user_id,
-
-								double_optin,
-
-								get_email,
-
-								reply_email,
-
-								email_updated,
-
-								start_date,
-
-								end_date,
-
-								expire_message,
-
-								attach_mobile_device,
-
-								double_optin_check,
-
-								get_subs_name_check,
-
-								msg_to_get_subscriber_name,
-
-								name_received_confirmation_msg,
-
-								campaign_expiry_check,
-
-								double_optin_confirm_message,
-
-								followup_msg_check,
-
-                                
-
-                                campaign_beacon_check,
-
-                                beacon,
-
-                                beacon_url_type,
-
-                                coupon,
-
-                                custom_url
-
-							)
-
-						values
-
-							(
-
-								'".$title."',
-
-								'".$keyword."',
-
-								'".$phoneNumber."',
-								
-								'".$sender_id."',
-
-								'1',
-
-								'".$welcomeSms."',
-
-								'".$alreadyMemberSms."',
-
-								'".$fileName."',
-
-								'".$_SESSION['user_id']."',
-
-								'".$doubleOptin."',
-
-								'".$get_email."',
-
-								'".$reply_email."',
-
-								'".$email_updated."',
-
-								'".$_REQUEST['start_date']."',
-
-								'".$_REQUEST['end_date']."',
-
-								'".$_REQUEST['expire_message']."',
-
-								'".$_REQUEST['attach_mobile_device']."',
-
-								'".$_REQUEST['double_optin_check']."',
-
-								'".$_REQUEST['get_subs_name_check']."',
-
-								'".DBin($_REQUEST['msg_to_get_subscriber_name'])."',
-
-								'".DBin($_REQUEST['name_received_confirmation_msg'])."',
-
-								'".$_REQUEST['campaign_expiry_check']."',
-
-								'".DBin($_REQUEST['double_optin_confirm_message'])."',
-
-								'".$_REQUEST['followup_msg_check']."',
-
-                                
-
-                                '".$_REQUEST['campaign_beacon_check']."',
-
-                                '".$_REQUEST['beacon']."',
-
-                                '".$_REQUEST['beacon_url_type']."',
-
-                                '".$_REQUEST['coupon']."',
-
-                                '".$_REQUEST['custom_url']."'
-
-							)";
-
-				$res = mysqli_query($link,$sql);
-
-				if($res){
-
-				    
-
-                    
-
-                    /////////////// beacon api code //////////////
-
-                    
-
-                    if($_REQUEST['campaign_beacon_check']=="1" && $_REQUEST['beacon']!=""){
-
-                     
-
-                        $sql_as = "select estimote_app_id,estimote_app_token from application_settings where user_id='".$_SESSION['user_id']."'";
-
-                    	$res_as = mysqli_query($link,$sql_as);
-
-                    	$row_as = mysqli_fetch_assoc($res_as);
-
-                        $AppID = $row_as['estimote_app_id'];
-
-                        $AppToken = $row_as['estimote_app_token'];
-
-                        
-
-                        $identifier = $_REQUEST['beacon'];
-
-                        
-
-                        if($_REQUEST['beacon_url_type']=="1"){
-
-                            
-
-                            $sql_pages = "select * from pages where id='".$_REQUEST['coupon']."'";
-
-                        	$res_pages = mysqli_query($link,$sql_pages);
-
-                        	$row_pages = mysqli_fetch_assoc($res_pages);
-
-                            $eddystone_url = $row_pages['short_url'];
-
-                        }else{
-
-                            $eddystone_url = $_REQUEST['custom_url'];
-
-                        }
-
-                        
-
-                        $url = "https://$AppID:$AppToken@cloud.estimote.com/v2/devices/$identifier";
-
-                        $data = '{
-
-                           "settings": {
-
-                             "advertisers": {
-
-                               "eddystone_url": [{
-
-                                 "index": 1,
-
-                                 "name": "Eddystone URL",
-
-                                 "enabled": true,
-
-                                 "interval": 300,
-
-                                 "power": "-4",
-
-                                 "url" : "'.$eddystone_url.'"        
-
-                               }]
-
-                             }
-
-                           }
-
-                        }';
-
-                                           
-
-                        $res = curl_process22($url,$data);
-
-                        
+                        $get_email = '0';
 
                     }
 
-                    /////////////// beacon api code //////////////
+                    if ($_REQUEST['attach_mobile_device'] != '1')
 
-                    
+                        $_REQUEST['attach_mobile_device'] = '0';
 
-                    
+                    if ($_REQUEST['double_optin_check'] != '1')
 
-					// Addin follow up messages
+                        $_REQUEST['double_optin_check'] = '0';
 
-					$campaignID = mysqli_insert_id($link);
+                    if ($_REQUEST['get_subs_name_check'] != '1')
 
-					$mediaCount = 0;
+                        $_REQUEST['get_subs_name_check'] = '0';
 
-					$failedMediaCount = 0;
+                    if ($_REQUEST['campaign_expiry_check'] != '1')
 
-					$followUpCount = 0;
+                        $_REQUEST['campaign_expiry_check'] = '0';
 
-					for($i=0;$i<count($_REQUEST['delay_day']);$i++){
+                    if ($_REQUEST['followup_msg_check'] != '1')
 
-						if((trim($_REQUEST['delay_day'][$i])!='') && (trim($_REQUEST['delay_message'][$i])!='')){
+                        $_REQUEST['followup_msg_check'] = '0';
 
-							$fileName = '';
 
-							if($_FILES['delay_media']['name'][$i]!=''){
+                    $reply_email = DBin($_REQUEST['reply_email']);
 
-								$ext = getExtension($_FILES['delay_media']['name'][$i]);
+                    $email_updated = DBin($_REQUEST['email_updated']);
 
-								$extns = array('jpg','jpeg','png','bmp','gif');
+                    $sql = "insert into campaigns
+    
+                                (
+    
+                                    title,
+    
+                                    keyword,
+    
+                                    phone_number,
+                                    
+                                    sender_id,
+    
+                                    type,
+    
+                                    welcome_sms,
+    
+                                    already_member_msg,
+    
+                                    media,
+    
+                                    user_id,
+    
+                                    double_optin,
+    
+                                    get_email,
+    
+                                    reply_email,
+    
+                                    email_updated,
+    
+                                    start_date,
+    
+                                    end_date,
+    
+                                    expire_message,
+    
+                                    attach_mobile_device,
+    
+                                    double_optin_check,
+    
+                                    get_subs_name_check,
+    
+                                    msg_to_get_subscriber_name,
+    
+                                    name_received_confirmation_msg,
+    
+                                    campaign_expiry_check,
+    
+                                    double_optin_confirm_message,
+    
+                                    followup_msg_check,
+    
+                                    
+    
+                                    campaign_beacon_check,
+    
+                                    beacon,
+    
+                                    beacon_url_type,
+    
+                                    coupon,
+    
+                                    custom_url
+    
+                                )
+    
+                            values
+    
+                                (
+    
+                                    '" . $title . "',
+    
+                                    '" . $keyword . "',
+    
+                                    '" . $phoneNumber . "',
+                                    
+                                    '" . $sender_id . "',
+    
+                                    '1',
+    
+                                    '" . $welcomeSms . "',
+    
+                                    '" . $alreadyMemberSms . "',
+    
+                                    '" . $fileName . "',
+    
+                                    '" . $_SESSION['user_id'] . "',
+    
+                                    '" . $doubleOptin . "',
+    
+                                    '" . $get_email . "',
+    
+                                    '" . $reply_email . "',
+    
+                                    '" . $email_updated . "',
+    
+                                    '" . $_REQUEST['start_date'] . "',
+    
+                                    '" . $_REQUEST['end_date'] . "',
+    
+                                    '" . $_REQUEST['expire_message'] . "',
+    
+                                    '" . $_REQUEST['attach_mobile_device'] . "',
+    
+                                    '" . $_REQUEST['double_optin_check'] . "',
+    
+                                    '" . $_REQUEST['get_subs_name_check'] . "',
+    
+                                    '" . DBin($_REQUEST['msg_to_get_subscriber_name']) . "',
+    
+                                    '" . DBin($_REQUEST['name_received_confirmation_msg']) . "',
+    
+                                    '" . $_REQUEST['campaign_expiry_check'] . "',
+    
+                                    '" . DBin($_REQUEST['double_optin_confirm_message']) . "',
+    
+                                    '" . $_REQUEST['followup_msg_check'] . "',
+    
+                                    
+    
+                                    '" . $_REQUEST['campaign_beacon_check'] . "',
+    
+                                    '" . $_REQUEST['beacon'] . "',
+    
+                                    '" . $_REQUEST['beacon_url_type'] . "',
+    
+                                    '" . $_REQUEST['coupon'] . "',
+    
+                                    '" . $_REQUEST['custom_url'] . "'
+    
+                                )";
 
-								if(!in_array($ext,$extns)){
+                    $res = mysqli_query($link, $sql);
 
-									$failedMediaCount++;
+                    if ($res) {
 
-								}else{
 
-									$fileName = uniqid().'_'.$_FILES['delay_media']['name'][$i];
+                        /////////////// beacon api code //////////////
 
-									$tmpName  = $_FILES['delay_media']['tmp_name'][$i];
 
-									@move_uploaded_file($tmpName,'uploads/'.$fileName);
+                        if ($_REQUEST['campaign_beacon_check'] == "1" && $_REQUEST['beacon'] != "") {
 
-									$fileName = getServerUrl().'/uploads/'.$fileName;
 
-									$mediaCount++;
+                            $sql_as = "select estimote_app_id,estimote_app_token from application_settings where user_id='" . $_SESSION['user_id'] . "'";
 
-								}
+                            $res_as = mysqli_query($link, $sql_as);
 
-							}
+                            $row_as = mysqli_fetch_assoc($res_as);
 
-							$sqlFollow = "insert into follow_up_msgs
+                            $AppID = $row_as['estimote_app_id'];
 
-									(group_id,delay_day,delay_time,message,media,user_id)values
+                            $AppToken = $row_as['estimote_app_token'];
 
-									('".$campaignID."','".$_REQUEST['delay_day'][$i]."','".$_REQUEST['delay_time'][$i]."','".DBin($_REQUEST['delay_message'][$i])."','".$fileName."','".$_SESSION['user_id']."')";
 
-							$resFollow = mysqli_query($link,$sqlFollow);
+                            $identifier = $_REQUEST['beacon'];
 
-							if($resFollow){
 
-								$followUpCount++;
+                            if ($_REQUEST['beacon_url_type'] == "1") {
 
-							}
 
-						}
+                                $sql_pages = "select * from pages where id='" . $_REQUEST['coupon'] . "'";
 
-					}
+                                $res_pages = mysqli_query($link, $sql_pages);
 
-					// end follow up messages
+                                $row_pages = mysqli_fetch_assoc($res_pages);
 
-					$_SESSION['message'] = '<div class="alert alert-success"><strong>Success! Campaign saved successfully with <b>'.$followUpCount.'</b> follow up messages.</strong> .</div>';	
+                                $eddystone_url = $row_pages['short_url'];
 
-				}else{
+                            } else {
 
-					$_SESSION['message'] = '<div class="alert alert-danger"><strong>Error! while saving campaign.</strong> .</div>';
+                                $eddystone_url = $_REQUEST['custom_url'];
 
-				}
+                            }
+
+
+                            $url = "https://$AppID:$AppToken@cloud.estimote.com/v2/devices/$identifier";
+
+                            $data = '{
+        
+                                   "settings": {
+        
+                                     "advertisers": {
+        
+                                       "eddystone_url": [{
+        
+                                         "index": 1,
+        
+                                         "name": "Eddystone URL",
+        
+                                         "enabled": true,
+        
+                                         "interval": 300,
+        
+                                         "power": "-4",
+        
+                                         "url" : "' . $eddystone_url . '"        
+        
+                                       }]
+        
+                                     }
+        
+                                   }
+        
+                                }';
+
+
+                            $res = curl_process22($url, $data);
+
+
+                        }
+
+                        /////////////// beacon api code //////////////
+
+
+                        // Addin follow up messages
+
+                        $campaignID = mysqli_insert_id($link);
+
+                        $mediaCount = 0;
+
+                        $failedMediaCount = 0;
+
+                        $followUpCount = 0;
+
+                        for ($i = 0; $i < count($_REQUEST['delay_day']); $i++) {
+
+                            if ((trim($_REQUEST['delay_day'][$i]) != '') && (trim($_REQUEST['delay_message'][$i]) != '')) {
+
+                                $fileName = '';
+
+                                if ($_FILES['delay_media']['name'][$i] != '') {
+
+                                    $ext = getExtension($_FILES['delay_media']['name'][$i]);
+
+                                    $extns = array('jpg', 'jpeg', 'png', 'bmp', 'gif');
+
+                                    if (!in_array($ext, $extns)) {
+
+                                        $failedMediaCount++;
+
+                                    } else {
+
+                                        $fileName = uniqid() . '_' . $_FILES['delay_media']['name'][$i];
+
+                                        $tmpName = $_FILES['delay_media']['tmp_name'][$i];
+
+                                        @move_uploaded_file($tmpName, 'uploads/' . $fileName);
+
+                                        $fileName = getServerUrl() . '/uploads/' . $fileName;
+
+                                        $mediaCount++;
+
+                                    }
+
+                                }
+
+                                $sqlFollow = "insert into follow_up_msgs
+        
+                                            (group_id,delay_day,delay_time,message,media,user_id)values
+        
+                                            ('" . $campaignID . "','" . $_REQUEST['delay_day'][$i] . "','" . $_REQUEST['delay_time'][$i] . "','" . DBin($_REQUEST['delay_message'][$i]) . "','" . $fileName . "','" . $_SESSION['user_id'] . "')";
+
+                                $resFollow = mysqli_query($link, $sqlFollow);
+
+                                if ($resFollow) {
+
+                                    $followUpCount++;
+
+                                }
+
+                            }
+
+                        }
+
+                        // end follow up messages
+
+                        $_SESSION['message'] = '<div class="alert alert-success"><strong>Success! Campaign saved successfully with <b>' . $followUpCount . '</b> follow up messages.</strong> .</div>';
+
+                    } else {
+
+                        $_SESSION['message'] = '<div class="alert alert-danger"><strong>Error! while saving campaign.</strong> .</div>';
+
+                    }
+
+                }else{
+                    $_SESSION['message'] = '<div class="alert alert-success">Your created locations limit is exceeded, Currently created <b>'.$totalLocations.'</b> location(s).</div>';
+                }
 
 			}else{
 
-				$_SESSION['message'] = '<div class="alert alert-danger"><strong>Error! <b>'.$_REQUEST['keyword'].'</b> is already used or maybe reserve keyword, try another.</strong> .</div>';
+				$_SESSION['message'] = '<div class="alert alert-danger"><strong>Error! <b>'.$_REQUEST['keyword'].'</b> is already used or maybe reserve keyword, try another</strong> .</div>';
 
 			}
 

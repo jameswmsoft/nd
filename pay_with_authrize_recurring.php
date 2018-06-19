@@ -162,6 +162,8 @@
 									end_date,
 									sms_credits,
 									phone_number_limit,
+									locations,
+									reminders,
 									iso_country,
 									pkg_country
 								)
@@ -173,6 +175,8 @@
 									'".$endDate."',
 									'".$pkgInfo['sms_credits']."',
 									'".$pkgInfo['phone_number_limit']."',
+									'".$pkgInfo['locations']."',
+									'".$pkgInfo['reminders']."',
 									'".$pkgInfo['iso_country']."',
 									'".$pkgInfo['country']."'
 								)";
@@ -282,6 +286,8 @@
 									end_date,
 									sms_credits,
 									phone_number_limit,
+									locations,
+									reminders,
 									iso_country,
 									pkg_country
 								)
@@ -293,6 +299,8 @@
 									'".$endDate."',
 									'".$pkgInfo['sms_credits']."',
 									'".$pkgInfo['phone_number_limit']."',
+									'".$pkgInfo['locations']."',
+									'".$pkgInfo['reminders']."',
 									'".$pkgInfo['iso_country']."',
 									'".$pkgInfo['country']."'
 								)";

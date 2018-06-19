@@ -37,6 +37,14 @@
 								<label>Title*</label>
 								<input type="text" name="title" parsley-trigger="change" required placeholder="Enter title..." class="form-control" value="<?php echo $row['title']?>">
 							</div>
+                            <div class="form-group">
+                                <label>Locations*</label>
+                                <input type="number" name="locations" parsley-trigger="change" required placeholder="Enter title..." class="form-control" value="<?php echo $row['locations']?>">
+                            </div>
+                            <div class="form-group">
+                                <label>Reminders*</label>
+                                <input type="number" name="reminders" parsley-trigger="change" required placeholder="Enter title..." class="form-control" value="<?php echo $row['reminders']?>">
+                            </div>
 							<div class="form-group">
 								<label>SMS Credits*</label>
 								<input type="text" name="sms_credits" parsley-trigger="change" required placeholder="Enter sms credits..." class="form-control" value="<?php echo $row['sms_credits']?>">
